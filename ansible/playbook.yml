@@ -1,0 +1,48 @@
+- hosts: all
+  sudo: true
+  tasks:
+    - name: curl
+      apt: name=curl
+    - name: update cache
+      apt: update_cache=yes
+    - name: Safe Upgrade
+      apt: upgrade=safe
+    - name: PSF
+      apt: name=python-software-properties
+    - name: SPC
+      apt: name=software-properties-common
+    - name: PPA nginx
+      apt_repository: repo='ppa:nginx/stable'
+    - name: PPA maven
+      apt_repository: repo='ppa:natecarlson/maven3'
+    - name: PPA JRE
+      apt_repository: repo='ppa:webupd8team/java' update_cache=yes
+    - name: Automatically select the Oracle License
+      shell: echo debconf shared/accepted-oracle-license-v1-1 select true | sudo debconf-set-selections
+
+    - name: Inatall nginx
+      apt: name=nginx
+      notify:
+      - restart nginx
+    - name: Inatall git
+      apt: name=git
+    - name: Java 8
+      apt: name=oracle-java8-installer state=latest update-cache=yes force=yes
+    - name: Maven
+      apt: name=maven3
+    - name: Relink Maven
+      shell: sudo ln -s /usr/share/maven3/bin/mvn /usr/bin/mvn
+    - name: MongoDB key
+      shell: sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv 7F0CEB10
+    - name: MongoDB apt
+      shell: echo 'deb http://downloads-distro.mongodb.org/repo/ubuntu-upstart dist 10gen' | sudo tee /etc/apt/sources.list.d/mongodb.list
+    - name: Update Cache
+      apt: update_cache=yes
+    - name: Install MongoDB
+      apt: name=mongodb-org
+
+  handlers:
+    - name: restart nginx
+      service: name=nginx state=restarted
+    - name: restart memcached
+      service:  name=memcached state=restarted
