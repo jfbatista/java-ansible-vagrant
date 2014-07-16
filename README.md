@@ -11,6 +11,8 @@ Pull and run:
 vagrant up
 ```
 
+Will run VM on 192.168.56.102
+
 Just provisioning:
 
 ```bash
